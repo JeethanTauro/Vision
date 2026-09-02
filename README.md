@@ -162,6 +162,9 @@ V1 focuses on establishing the core architecture:
 
 The goal of V1 is to provide a working foundation before optimizing the architecture further.
 
+## Demo
+[Click on this link for the demo](https://youtu.be/rzg6q2zhR8g)
+
 ## VISION Mini
 
 Checkout the **`vision-mini`** branch.
