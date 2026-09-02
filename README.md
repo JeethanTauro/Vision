@@ -1,172 +1,120 @@
-# VISION
+# VISION-mini
 
-VISION is a personal AI assistant built around a simple idea: use existing AI coding CLIs as the execution layer and Notion as the persistent workspace.
+VISION-mini is a lightweight variant of VISION designed for users who have limited access to capable or high-context AI models.
 
-VISION is currently at **V1**.
+It preserves the core VISION workflow while intentionally reducing **context usage, Skill count, and instruction complexity**.
 
-## Architecture
+## Why VISION-mini Exists
 
-VISION is designed to be CLI-agnostic. The same workspace can be operated through multiple AI coding agents:
+The full VISION V1 prioritizes reliability and capability. Its Skills contain detailed instructions, validation rules, workflows, and deliberate redundancy to improve behavioral consistency.
 
-- **Antigravity CLI (AGY)** — primary CLI, using `GEMINI.md`
-- **OpenCode** — alternative CLI, using `AGENTS.md`
-- **Codex CLI** — alternative CLI, using `AGENTS.md`
+That comes with a cost: **context and model capability requirements**.
 
-The CLIs provide the agent runtime, model access, filesystem access, and MCP support. VISION's behavior is defined through Markdown instructions and Skills, allowing the same architecture to work across different CLIs.
+VISION-mini takes the opposite approach:
 
-```text
-                  ┌─────────────────────┐
-                  │       VISION        │
-                  │ Instructions +      │
-                  │      Skills         │
-                  └──────────┬──────────┘
-                             │
-              ┌──────────────┼──────────────┐
-              │              │              │
-        ┌─────▼─────┐  ┌─────▼─────┐  ┌─────▼─────┐
-        │    AGY    │  │ OpenCode  │  │   Codex   │
-        │ GEMINI.md │  │ AGENTS.md │  │ AGENTS.md │
-        └─────┬─────┘  └─────┬─────┘  └─────┬─────┘
-              │              │              │
-              └──────────────┼──────────────┘
-                             │
-                         Notion MCP
-                             │
-                  ┌──────────▼──────────┐
-                  │       Notion        │
-                  │ Tasks / Calendar /  │
-                  │ Memory / Reviews /  │
-                  │                     │
-                  └─────────────────────┘
-```
+> **Use less context and fewer capabilities so VISION can run on more constrained models and free-tier tooling.**
 
-The purpose of this architecture is also practical: different CLIs provide access to different models, providers, quotas, and free tiers. Instead of making VISION dependent on a single model or CLI, the same workspace can be used across multiple agents.
+## V1 vs VISION-mini
 
-## Skills
+|                     | VISION V1          | VISION-mini                   |
+| ------------------- | ------------------ | ----------------------------- |
+| Goal                | Maximum capability | Minimum resource requirements |
+| Instructions        | Detailed           | Compressed                    |
+| Skills              | Full set           | Reduced set                   |
+| Context usage       | Higher             | Lower                         |
+| Behavioral guidance | Extensive          | Essential rules only          |
+| Redundancy          | Intentional        | Minimized                     |
+| Capability          | Full               | Reduced                       |
+| Reliability         | Higher             | Potentially lower             |
+| Model requirements  | Higher             | Lower                         |
 
-VISION's behavior is separated into focused Skills:
+## What Is Reduced?
 
-| Skill | Responsibility |
-|---|---|
-| `tasks-management` | Create, retrieve, update, and complete tasks |
-| `calendar-management` | Manage scheduled events |
-| `daily-planning` | Build a realistic plan from tasks and calendar |
-| `daily-review` | Review the day and maintain daily reviews |
-| `session-memory` | Store and retrieve durable context |
-| `morning-brief` | Provide a morning overview of tasks and events |
-| `quick-capture` | Convert thoughts into tasks or durable memory |
-| `focus-recommendation` | Recommend what to work on next |
+VISION-mini reduces the system in two ways.
 
-Skills are stored under:
+### 1. Smaller Skills
 
-```text
-.agents/skills/
-```
+Skills are rewritten into compact, model-oriented instructions.
 
-Each Skill contains the instructions required for the agent to perform that specific capability.
+Explanations, repetition, and non-essential guidance are removed while preserving the core workflow and safety constraints.
 
-## Persistence
+### 2. Fewer Skills
 
-Notion acts as VISION's persistent data layer.
+VISION-mini does not include every VISION V1 capability.
 
-VISION separates information by purpose:
+For example, advanced capabilities such as:
 
-- **Tasks** — actionable work
-- **Calendar** — scheduled events
-- **Daily Reviews** — daily reflections
-- **Session Memory** — durable context
+* Project management
+* Email management
+* Other larger or specialized Skills
 
-Notion resource IDs are kept in local configuration rather than hardcoded into the Skills.
+may be excluded entirely.
 
-## Getting Started
+This is intentional. A smaller Skill set reduces both the amount of context required and the complexity the model must reason over.
 
-### 1. Clone the repository
+## The Tradeoff
 
-```bash
-git clone https://github.com/JeethanTauro/vision.git
-cd vision
-```
+VISION-mini should **not be considered feature-equivalent to VISION V1**.
 
-### 2. Configure Notion
-
-Create the local Notion configuration:
+The tradeoff is straightforward:
 
 ```text
-config/notion.json
+More capabilities
+        +
+More detailed instructions
+        +
+More contextual guidance
+        ↓
+Higher resource requirements
+        ↓
+VISION V1
 ```
 
-Add the IDs of your VISION Notion resources:
+versus:
 
-```json
-{
-  "root_page_id": "YOUR_ROOT_PAGE_ID",
-  "tasks_database_id": "YOUR_TASKS_DATABASE_ID",
-  "calendar_database_id": "YOUR_CALENDAR_DATABASE_ID",
-  "daily_reviews_page_id": "YOUR_DAILY_REVIEWS_PAGE_ID",
-  "session_memory_database_id": "YOUR_SESSION_MEMORY_DATABASE_ID",
-  "projects_database_id": "YOUR_PROJECTS_DATABASE_ID"
-}
+```text
+Fewer capabilities
+        +
+Shorter instructions
+        +
+Less contextual overhead
+        ↓
+Lower resource requirements
+        ↓
+VISION-mini
 ```
 
-This file is local configuration.
+A capable model with sufficient context should generally prefer **VISION V1**.
 
-### 3. Connect Notion MCP
+A constrained or free model may benefit from **VISION-mini**, even if that means sacrificing capabilities or some behavioral reliability.
 
-VISION uses the Notion MCP server for persistent storage and retrieval.
+## Design Principle
 
-Configure the Notion MCP server for whichever CLI you use.
+VISION-mini follows one principle:
 
-For example, the project can be used with:
+> **Preserve the core VISION experience while spending as few tokens as reasonably possible.**
 
-- Antigravity CLI
-- OpenCode
-- Codex CLI
+The goal is not to make VISION-mini equally powerful.
 
-The CLI handles the model and agent runtime while Notion MCP provides VISION's persistent workspace.
+The goal is to make **a useful version of VISION available when model capability, context limits, or cost are constraints**.
 
-### 4. Run VISION
+## Relationship to VISION V1
 
-Enter the repository and start your preferred CLI.
+VISION V1 remains the **full reference implementation**.
 
-For Antigravity:
+VISION-mini is a separate, intentionally constrained profile derived from it.
 
-```bash
-agy
-```
+Changes made to VISION-mini should therefore be evaluated against two questions:
 
-For OpenCode:
+1. **Does the reduced version still behave correctly for its supported capabilities?**
+2. **Did the reduction meaningfully decrease its context/resource requirements?**
 
-```bash
-opencode
-```
+If a capability is not essential to the mini profile, it may be removed rather than compressed.
 
-For Codex:
+## In Short
 
-```bash
-codex
-```
+**VISION V1:** Full-featured, detailed, reliability-first.
 
-The selected CLI loads the appropriate instruction file and Skills from the repository.
+**VISION-mini:** Lightweight, reduced, cost/context-first.
 
-## V1
-
-V1 focuses on establishing the core architecture:
-
-- Multiple CLI support
-- Notion MCP integration
-- Modular Skills
-- Task and calendar management
-- Daily planning and reviews
-- Persistent session memory
-- Quick capture and focus recommendations
-
-The goal of V1 is to provide a working foundation before optimizing the architecture further.
-
-## VISION Mini
-
-Checkout the **`vision-mini`** branch.
-
-VISION Mini aggressively reduces the size of the Markdown instructions and Skills
-
-The current `main` branch remains the full V1 implementation.
-
+VISION-mini exists so that the VISION architecture is not limited to users with expensive or high-capability models.
