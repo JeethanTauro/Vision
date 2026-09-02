@@ -28,6 +28,9 @@ Use only:
 - **Daily review** — For plans that were indicated or made for some other daye (future plans)
 - **Calendar database** — existing events and commitments
 
+Notion database and page IDs are stored in the local VISION configuration.
+Use the configured IDs from there
+
 Do not create databases, views, or properties.
 
 Never modify unrelated Notion content.

@@ -37,9 +37,8 @@ If not, do not store it.
 
 All memory operations must use only the existing VISION Session Memory database.
 The VISION Notion workspace is a page named as Vision whose ID is in the config/notion.json file
-
-Notion resource IDs are stored in the local VISION configuration.
-Use the configured resource IDs from there
+Notion database and page IDs are stored in the local VISION configuration.
+Use the configured IDs from there
 
 Never:
 

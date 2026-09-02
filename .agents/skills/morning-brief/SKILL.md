@@ -40,9 +40,12 @@ Do not activate merely because the phrase "good morning" appears in ordinary con
 Use only existing data from:
 
 - **Calendar database** — today's events
+- **Daily review** — For plans that were indicated or made for some other daye (future plans)
 - **Tasks database** — incomplete tasks and deadlines
 
 Do not create or modify any Notion content.
+Notion database and page IDs are stored in the local VISION configuration.
+Use the configured IDs from there
 
 ---
 

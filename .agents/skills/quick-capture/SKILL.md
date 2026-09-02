@@ -163,6 +163,9 @@ Quick Capture may use **only the existing VISION Notion storage locations**:
 - Tasks database
 - Session Memory database
 
+Notion database and page IDs are stored in the local VISION configuration.
+Use the configured IDs from there
+
 Never:
 
 - Create a new database.

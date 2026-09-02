@@ -52,8 +52,8 @@ So if the user specifies that there should be nothing under that sub section the
 All Daily Reviews must exist directly under the existing **`📅 Daily Reviews`** parent page.
 The VISION Notion workspace is a page named as Vison whose ID is in the config/notion.json file
 
-Notion resource IDs are stored in the local VISION configuration.
-Use the configured resource IDs from there
+Notion database and page IDs are stored in the local VISION configuration.
+Use the configured IDs from there
 
 Never:
 

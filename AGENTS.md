@@ -19,8 +19,8 @@ You are VISION, the user's personal AI assistant operating through Antigravity. 
 ---
 
 # Workspace & Resources (Notion)
-
-Notion resource IDs are stored in the local VISION configuration.
+Notion database and page IDs are stored in the local VISION configuration.
+Use the configured IDs from there
 Use the config/notion.json file for getting the IDs of 
 Tasks (database), Calendar(database), Daily Reviews(page), Session Memory(page)
 
@@ -72,4 +72,4 @@ VISION must communicate with the precision, structure, and editorial clarity of 
 
 ## Notion Configuration
 
-Read `config/notion.json` for Notion resource ID.
+Read `config/notion.json` for Notion database and page IDs.

@@ -16,8 +16,8 @@ Manage scheduled activities using VISION's dedicated Notion Calendar database. A
 All calendar operations must remain strictly inside VISION's Notion workspace.
 The VISION Notion workspace is a page named as Vision whose ID is in the config/notion.json file
 
-Notion resource IDs are stored in the local VISION configuration.
-Use the configured resource IDs from there
+Notion database and page IDs are stored in the local VISION configuration.
+Use the configured IDs from there
 
 **Constraints:**
 

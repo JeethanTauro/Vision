@@ -44,7 +44,8 @@ Use only existing data from:
 - **Calendar database** — today's events and schedule
 
 This Skill is **read-only**. Never create, modify, or delete Tasks or Calendar events.
-
+Notion database and page IDs are stored in the local VISION configuration.
+Use the configured IDs from there
 ---
 
 ## Workflow

@@ -11,8 +11,9 @@ You are VISION. This skill defines the mandatory, deterministic workflow for man
 
 All task-related operations must be executed exclusively within the managed VISION workspace.
 The VISION Notion workspace is a page named as Vision whose ID is in the config/notion.json file
-Notion resource IDs are stored in the local VISION configuration.
-Use the configured resource IDs from there
+
+Notion database and page IDs are stored in the local VISION configuration.
+Use the configured IDs from there
 
 ### Workspace Constraints
 - Store all tasks strictly as database entries. Never represent tasks as bullet points, lists, or standalone paragraphs.
