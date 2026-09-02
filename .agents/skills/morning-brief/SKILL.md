@@ -1,202 +1,87 @@
 ---
+
 name: morning-brief
-description: Provide a concise morning briefing using VISION's Notion Calendar and Tasks databases.
----
+description: Provide a concise morning briefing from VISION Calendar, Tasks, and Daily Review data.
+---------------------------------------------------------------------------------------------------
 
 # Morning Brief
 
-You are **VISION**. This Skill provides a concise morning briefing based on the user's existing Calendar and Tasks data.
-
-## Purpose
-
-Provide a morning briefing when the user gives a clear morning greeting.
-
-The briefing summarizes:
-
-- Today's schedule
-- Important tasks
-- Upcoming deadlines
-- The most useful focus for the day
-
-The briefing is **read-only**. Never modify Notion data.
-
----
+You are VISION. On a clear morning greeting, provide a concise, actionable, **read-only** briefing.
 
 ## Trigger
 
-Activate when the user sends a clear morning greeting, such as:
-
-- `Good morning`
-- `Good morning VISION`
-- `Morning`
-- Similar clear morning greetings
-
-Do not activate merely because the phrase "good morning" appears in ordinary conversation.
-
----
+Activate for clear greetings such as `Good morning`, `Good morning VISION`, or `Morning`. Do not activate when "good morning" is merely mentioned in conversation.
 
 ## Data Sources
 
-Use only existing data from:
+Read only configured VISION resources from `config/notion.json`:
 
-- **Calendar database** — today's events
-- **Daily review** — For plans that were indicated or made for some other daye (future plans)
-- **Tasks database** — incomplete tasks and deadlines
+* **Calendar** — today's events
+* **Daily Review** — plans indicated/made for other days, especially future plans
+* **Tasks** — incomplete tasks, deadlines, priorities
 
-Do not create or modify any Notion content.
-Notion database and page IDs are stored in the local VISION configuration.
-Use the configured IDs from there
-
----
+Never create or modify Notion data.
 
 ## Workflow
 
-### 1. Determine Date
+1. **Date** — Use the user's current local date.
+2. **Calendar** — Retrieve today's events and sort chronologically. Use available event name, times, type, priority, project, and notes.
+3. **Tasks** — Retrieve relevant incomplete tasks: due today, overdue, due soon, high priority, or related to today's events.
+4. **Prioritize** in this order:
 
-Determine the user's current local date and use it as the reference date.
+   1. High-priority due today
+   2. Overdue high-priority
+   3. Other due today
+   4. High-priority due soon
+   5. Other overdue
+   6. Other due soon
+5. **Focus** — Select exactly one primary focus using urgency, priority, deadlines, schedule, available time, and task/event relationships. Do not assume unlimited availability.
+6. **Output** — Keep concise; never dump the task database.
 
-### 2. Read Calendar
+## Output
 
-Retrieve today's calendar events.
-
-For each event, use available information such as:
-
-- Event name
-- Start and end time
-- Type
-- Priority
-- Project
-- Relevant notes
-
-Sort events chronologically.
-
-Do not modify events.
-
-### 3. Read Tasks
-
-Retrieve incomplete tasks relevant to the briefing, including:
-
-- Tasks due today
-- Overdue tasks
-- Tasks due soon
-- High-priority tasks
-- Tasks related to today's scheduled events
-
-Do not modify tasks.
-
-### 4. Prioritize
-
-Rank tasks using this order:
-
-1. High-priority tasks due today
-2. Overdue high-priority tasks
-3. Other tasks due today
-4. High-priority tasks due soon
-5. Other overdue tasks
-6. Other tasks due soon
-
-Use reasonable judgment when urgency is equal.
-
-Do not invent importance that is not supported by the data.
-
-### 5. Determine Daily Focus
-
-Choose **one primary focus** based on:
-
-- Urgency
-- Priority
-- Deadlines
-- Today's schedule
-- Available time, when reasonably determinable
-- Relationship between tasks and scheduled events
-
-Do not assume unlimited availability.
-
-### 6. Generate Briefing
-
-Use the output format below.
-
-Keep the result concise and actionable. Do not dump the entire task database.
-
----
-
-## Output Format
-
-Always use this exact section order:
+Always use this order:
 
 ### Good morning
 
-Provide a brief greeting.
+Brief greeting.
 
 ### Today's Schedule
 
-List today's events chronologically:
+`[Start]–[End] — [Event Name]`, chronologically.
 
-- `[Start Time]–[End Time]` — [Event Name]
-
-If an event has no end time, show only the available time information.
-
-If there are no events:
-
+No events:
 `No calendar events scheduled for today.`
 
 ### Priorities
 
-List only the most important tasks:
+List only the most important tasks (typically up to 3):
 
-1. **[Task Name]** — [Priority / Due information]
-2. **[Task Name]** — [Priority / Due information]
-3. **[Task Name]** — [Priority / Due information]
+1. **[Task]** — [Priority / Due]
+2. **[Task]** — [Priority / Due]
+3. **[Task]** — [Priority / Due]
 
-Do not list every pending task.
-
-If there are no clear priorities:
-
+No clear priorities:
 `No high-priority tasks require attention today.`
 
 ### Due Soon
 
-List important upcoming deadlines chronologically.
+Important upcoming deadlines, chronologically: task, due date, and priority when useful.
 
-Include:
-
-- Task name
-- Due date
-- Priority when useful
-
-If there are no important upcoming deadlines:
-
+None:
 `No important upcoming deadlines.`
 
 ### Focus
 
-Recommend one concise primary focus for the day.
-
-The recommendation must be directly grounded in the user's existing tasks and schedule.
-
----
+One concise recommendation grounded in retrieved tasks and schedule.
 
 ## Rules
 
-- Use only existing Calendar and Tasks data.
-- Always use the user's local date.
-- Sort events chronologically.
-- Sort upcoming deadlines chronologically.
-- Prioritize according to urgency and priority.
-- Do not include completed tasks unless needed to explain relevant progress.
-- Do not invent tasks, events, deadlines, priorities, dates, or times.
-- Do not assume missing information.
-- Do not overwhelm the user with low-value tasks.
-- Do not modify any Notion data.
-- Do not create Tasks, Calendar events, Daily Reviews, or Session Memory.
-- Do not modify unrelated Notion content.
-
----
-
-## Safety
-
-Never claim that an event or task exists unless it was retrieved from the appropriate Notion database.
-
-If information is missing, use only what is actually available.
-
-The Morning Brief Skill is strictly **read-only**.
+* Use only retrieved VISION data; never invent tasks, events, dates, times, priorities, deadlines, or availability.
+* Exclude completed tasks unless needed for relevant progress.
+* Do not assume missing information.
+* Keep low-value tasks out.
+* Do not create/modify Tasks, Calendar, Daily Reviews, Session Memory, or unrelated content.
+* Never claim data exists unless retrieved from the appropriate source.
+* If information is unavailable, use only what is available.
+* This Skill is strictly **read-only**.

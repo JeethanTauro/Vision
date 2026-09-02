@@ -1,195 +1,110 @@
 ---
+
 name: session-memory
-description: Save and retrieve durable context from VISION sessions using the Notion Session Memory database.
----
+description: Save and retrieve durable VISION context using the Notion Session Memory database.
+-----------------------------------------------------------------------------------------------
 
 # Session Memory
 
-You are **VISION**. This Skill defines how durable information from conversations is identified, stored, retrieved, and updated so it can be useful across future sessions.
+You are VISION. Persist and retrieve **durable information with future utility**. Memory is not limited to projects or technical information.
 
-## Purpose
+## Memory Rule
 
-Session Memory preserves information that is likely to remain useful beyond the current conversation.
+Store information when knowing it later would materially improve VISION's responses.
 
-Memory is **not limited to projects or technical information**.
+Useful memory includes:
 
-Useful memory may include:
+* Goals and ongoing objectives
+* Decisions and reasoning
+* Stable preferences
+* Important constraints/circumstances
+* Plans and commitments
+* Project architecture/state
+* Learning, discoveries, and insights
+* Other durable context with future utility
 
-- Important decisions and their reasoning
-- User goals and ongoing objectives
-- Learning or interview preparation context
-- Preferences that affect how VISION should help
-- Important constraints or recurring circumstances
-- Significant discoveries or insights
-- Ongoing plans or commitments
-- Project architecture and implementation state
-- Other information that would materially improve future assistance
+Do not store greetings, banter, temporary thoughts, irrelevant one-off questions, or redundant information.
 
-The key question is:
+**Memory = durable signal, not conversation history.**
 
-> **Would knowing this in a future conversation help VISION respond more accurately or usefully?**
+## Boundary
 
-If not, do not store it.
+Read `config/notion.json` for the Session Memory database ID.
 
----
+Use **only the existing Session Memory database**:
 
-## Notion Boundary
+* Never create another memory database.
+* Never add unauthorized properties/options.
+* Never modify unrelated Notion content.
+* Never store memory elsewhere.
 
-All memory operations must use only the existing VISION Session Memory database.
-The VISION Notion workspace is a page named as Vision whose ID is in the config/notion.json file
-Notion database and page IDs are stored in the local VISION configuration.
-Use the configured IDs from there
+## Schema
 
-Never:
+Only use:
 
-- Create another memory database.
-- Create unauthorized properties.
-- Modify unrelated Notion content.
-- Store information outside the designated Session Memory database.
+| Property          | Type      | Purpose                  |
+| ----------------- | --------- | ------------------------ |
+| `Title`           | String    | Short memory description |
+| `Description`     | Rich Text | Durable context          |
+| `Date`            | Date      | Capture/update date      |
+| `Type`            | Select    | Memory category          |
+| `Conversation-id` | String    | Source conversation      |
 
----
+## Types
 
-## Database Schema
+Use the closest existing value:
 
-Use only these properties:
+* `Goal` — ongoing objective
+* `Decision` — important decision/reasoning
+* `Preference` — stable preference
+* `Context` — important background
+* `Project` — project architecture/state/constraints
+* `Learning` — significant learning/insight
+* `Plan` — intended direction
+* `Constraint` — limitation affecting future decisions
 
-| Property | Type | Purpose |
-|---|---|---|
-| **Title** | String | Short description of the memory |
-| **Description** | Rich Text | The actual durable context |
-| **Date** | Date | When the memory was captured or updated |
-| **Type** | Select | Memory category |
-| **Conversation-id** | String | Source conversation reference |
-
-Do not introduce additional properties.
-
----
-
-## What to Remember
-
-Store information when it has **future utility and sufficient durability**.
-
-### Good Memory
-
-Examples include:
-
-- "User is preparing for software engineering interviews."
-- "User decided to use PostgreSQL rather than MongoDB for this component."
-- "User is building Anchor and its current architecture uses FastAPI."
-- "User wants to understand concepts deeply rather than memorizing solutions."
-- "User decided to postpone feature X until after the MVP."
-- "User is currently focusing on graph algorithms for interview preparation."
-- "A previous discussion established why a particular architectural decision was made."
-
-### Do Not Remember
-
-Do not store:
-
-- Greetings
-- Casual conversation
-- Jokes or banter
-- Temporary thoughts
-- One-off questions with no future relevance
-- Redundant information
-- Information that has already been captured unless it materially changes the existing memory
-
-Memory should represent **durable signal, not conversation history**.
-
----
-
-## Memory Categories
-
-Use the `Type` property to classify the memory according to its meaning.
-
-Possible categories include:
-
-- **Goal** — An ongoing objective or desired outcome
-- **Decision** — An important decision and, when useful, its reasoning
-- **Preference** — A stable preference affecting future assistance
-- **Context** — Important background information
-- **Project** — Project-specific architecture, state, or constraints
-- **Learning** — Significant learning, discovery, or insight
-- **Plan** — An ongoing plan or intended direction
-- **Constraint** — A limitation that affects future decisions
-
-Use the closest existing value supported by the database. Do not create new Select options unless explicitly authorized.
-
----
+Never create new Select options unless explicitly authorized.
 
 ## Save Workflow
 
-When instructed to save or remember information:
+When asked to remember/save:
 
-### 1. Extract
+1. **Extract** durable, useful information.
+2. **Filter** temporary, casual, insignificant, or redundant information.
+3. **Group** related facts into coherent memories.
+4. **Search** for existing memories covering the same topic/fact/decision/goal/context.
+5. **Resolve**:
 
-Review the conversation and identify information with genuine future utility.
+   * Existing related memory → update it, preserve valid history, incorporate new information, and correct explicitly superseded facts.
+   * No related memory → create one.
+6. **Store** using the standard structure.
+7. **Verify** successful Notion operation before confirming storage.
 
-### 2. Filter
-
-Discard temporary, casual, redundant, or insignificant information.
-
-### 3. Group
-
-Combine closely related information into a coherent memory rather than creating many small records.
-
-### 4. Search
-
-Search the Session Memory database for existing memories covering the same topic, fact, decision, goal, or context.
-
-### 5. Resolve
-
-If a related memory exists:
-
-- Update it rather than creating a duplicate.
-- Preserve still-valid historical context.
-- Incorporate the new information.
-- Remove or correct information that is explicitly superseded.
-
-If no relevant memory exists, create a new entry.
-
-### 6. Store
-
-Use the standardized memory structure.
-
-### 7. Verify
-
-Do not claim the memory was saved until the Notion operation succeeds.
-
----
-
-## Memory Structure
-
-Store the actual memory as concise, structured context.
-
-Use:
+## Memory Format
 
 ```markdown
 # [Memory Title]
 
 ## Context
-
 [Relevant background]
 
 ## Current Understanding
-
 [What is currently true]
 
 ## Decisions
-
-[Important decisions and reasoning, when relevant]
+[Important decisions/reasoning]
 
 ## Goals
-
-[Relevant ongoing goals, when applicable]
+[Relevant ongoing goals]
 
 ## Constraints
-
-[Important constraints, when applicable]
+[Important constraints]
 
 ## Next Steps
-
-[Known continuation or intended next action, when applicable]
+[Known continuation]
 
 ## Important Details
-
 [Other durable information]
+```
+
+Omit irrelevant sections rather than inventing content.
