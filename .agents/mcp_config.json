@@ -2,6 +2,12 @@
   "mcpServers": {
     "notion": {
       "serverUrl": "https://mcp.notion.com/mcp"
+    },
+    "vision-memory": {
+      "command": "/home/jeethan/Desktop/vision/.venv/bin/python3",
+      "args": [
+        "/home/jeethan/Desktop/vision/memory/memory_mcp.py"
+      ]
     }
   }
 }
