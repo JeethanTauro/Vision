@@ -1,6 +1,6 @@
 # VISION
 
-VISION is a personal AI assistant built around a simple idea: use existing AI coding CLIs as the execution layer and Notion as the persistent workspace.
+VISION is a personal AI assistant built around a simple idea: use existing AI coding CLIs as the execution layer, with specialized MCP servers providing persistent capabilities.
 
 VISION is currently at **V1**.
 
@@ -15,29 +15,37 @@ VISION is designed to be CLI-agnostic. The same workspace can be operated throug
 The CLIs provide the agent runtime, model access, filesystem access, and MCP support. VISION's behavior is defined through Markdown instructions and Skills, allowing the same architecture to work across different CLIs.
 
 ```text
-                  ┌─────────────────────┐
-                  │       VISION        │
-                  │ Instructions +      │
-                  │      Skills         │
-                  └──────────┬──────────┘
-                             │
-              ┌──────────────┼──────────────┐
-              │              │              │
-        ┌─────▼─────┐  ┌─────▼─────┐  ┌─────▼─────┐
-        │    AGY    │  │ OpenCode  │  │   Codex   │
-        │ GEMINI.md │  │ AGENTS.md │  │ AGENTS.md │
-        └─────┬─────┘  └─────┬─────┘  └─────┬─────┘
-              │              │              │
-              └──────────────┼──────────────┘
-                             │
-                         Notion MCP
-                             │
-                  ┌──────────▼──────────┐
-                  │       Notion        │
-                  │ Tasks / Calendar /  │
-                  │ Memory / Reviews /  │
-                  │                     │
-                  └─────────────────────┘
+                         ┌─────────────────────┐
+                         │       VISION        │
+                         │ Instructions +      │
+                         │      Skills         │
+                         └──────────┬──────────┘
+                                    │
+                 ┌──────────────────┼──────────────────┐
+                 │                  │                  │
+           ┌─────▼─────┐      ┌─────▼─────┐      ┌─────▼─────┐
+           │    AGY    │      │ OpenCode  │      │   Codex   │
+           │ GEMINI.md │      │ AGENTS.md │      │ AGENTS.md │
+           └─────┬─────┘      └─────┬─────┘      └─────┬─────┘
+                 │                  │                  │
+                 └──────────────────┼──────────────────┘
+                                    │
+                         ┌──────────▼──────────┐
+                         │         MCP         │
+                         └───────┬───────┬─────┘
+                                 │       │
+                    ┌────────────▼─┐   ┌─▼──────────────┐
+                    │  Notion MCP  │   │ Memory MCP     │
+                    └──────┬───────┘   └───────┬────────┘
+                           │                   │
+                    ┌──────▼──────┐     ┌──────▼──────┐
+                    │   Notion    │     │    SQLite   │
+                    │             │     │              │
+                    │ Tasks       │     │ Session      │
+                    │ Calendar    │     │ Memory       │
+                    │ Reviews     │     │              │
+                    │ Projects    │     │              │
+                    └─────────────┘     └──────────────┘
 ```
 
 The purpose of this architecture is also practical: different CLIs provide access to different models, providers, quotas, and free tiers. Instead of making VISION dependent on a single model or CLI, the same workspace can be used across multiple agents.
@@ -52,7 +60,7 @@ VISION's behavior is separated into focused Skills:
 | `calendar-management` | Manage scheduled events |
 | `daily-planning` | Build a realistic plan from tasks and calendar |
 | `daily-review` | Review the day and maintain daily reviews |
-| `session-memory` | Store and retrieve durable context |
+| `session-memory` | Store and retrieve durable cross-session context |
 | `morning-brief` | Provide a morning overview of tasks and events |
 | `quick-capture` | Convert thoughts into tasks or durable memory |
 | `focus-recommendation` | Recommend what to work on next |
@@ -67,16 +75,22 @@ Each Skill contains the instructions required for the agent to perform that spec
 
 ## Persistence
 
-Notion acts as VISION's persistent data layer.
+VISION uses different persistence layers based on the type of information:
 
-VISION separates information by purpose:
+- **Notion** — Tasks, Calendar, Daily Reviews, and Projects
+- **SQLite** — Session Memory
 
-- **Tasks** — actionable work
-- **Calendar** — scheduled events
-- **Daily Reviews** — daily reflections
-- **Session Memory** — durable context
+Notion operations are exposed through the **Notion MCP**.
 
-Notion resource IDs are kept in local configuration rather than hardcoded into the Skills.
+Session Memory is exposed through the **VISION Memory MCP**, which provides:
+
+- `memory_save`
+- `memory_get`
+- `memory_search`
+- `memory_update`
+- `memory_delete`
+
+Notion resource IDs are kept in local configuration rather than hardcoded into Skills.
 
 ## Getting Started
 
@@ -103,26 +117,27 @@ Add the IDs of your VISION Notion resources:
   "tasks_database_id": "YOUR_TASKS_DATABASE_ID",
   "calendar_database_id": "YOUR_CALENDAR_DATABASE_ID",
   "daily_reviews_page_id": "YOUR_DAILY_REVIEWS_PAGE_ID",
-  "session_memory_database_id": "YOUR_SESSION_MEMORY_DATABASE_ID",
-  "projects_database_id": "YOUR_PROJECTS_DATABASE_ID"
 }
 ```
 
-This file is local configuration.
+This file contains local configuration and should not be committed with personal resource IDs.
 
-### 3. Connect Notion MCP
+### 3. Setup venv
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+```
+### 4. Configure MCP
 
-VISION uses the Notion MCP server for persistent storage and retrieval.
+VISION uses MCP servers for its external capabilities.
 
-Configure the Notion MCP server for whichever CLI you use.
+Configure the following for your preferred CLI:
 
-For example, the project can be used with:
+- **Notion MCP** — manages VISION's Notion workspace.
+- **VISION Memory MCP** — manages SQLite-backed session memory.
 
-- Antigravity CLI
-- OpenCode
-- Codex CLI
-
-The CLI handles the model and agent runtime while Notion MCP provides VISION's persistent workspace.
+The CLI handles the model and agent runtime while the MCP servers provide VISION's persistent capabilities.
 
 ### 4. Run VISION
 
@@ -146,30 +161,57 @@ For Codex:
 codex
 ```
 
+## MCP config
+### For opencode (vision/opencode.json)
+```json
+{
+  "mcpServers": {
+    "notion": {
+      "serverUrl": "https://mcp.notion.com/mcp"
+    },
+    "vision-memory": {
+      "command": "/home/<username>/Desktop/vision/.venv/bin/python3",
+      "args": [
+        "/home/<username>/Desktop/vision/memory/memory_mcp.py"
+      ]
+    }
+  }
+}
+```
+
+### For antigravity (vision/.agents/mcp_config.json)
+```json
+{
+  "mcpServers": {
+    "notion": {
+      "serverUrl": "https://mcp.notion.com/mcp"
+    },
+    "vision-memory": {
+      "command": "/home/<username>/Desktop/vision/.venv/bin/python3",
+      "args": [
+        "/home/<username>/Desktop/vision/memory/memory_mcp.py"
+      ]
+    }
+  }
+}
+```
+
+### For codex ( ~/.codex/config.toml)
+```toml
+[mcp_servers.vision-memory]
+command = "/home/<username>/Desktop/vision/.venv/bin/python3"
+args = ["/home/<username>/Desktop/vision/memory/memory_mcp.py"] 
+```
+
 The selected CLI loads the appropriate instruction file and Skills from the repository.
-
-## V1
-
-V1 focuses on establishing the core architecture:
-
-- Multiple CLI support
-- Notion MCP integration
-- Modular Skills
-- Task and calendar management
-- Daily planning and reviews
-- Persistent session memory
-- Quick capture and focus recommendations
-
-The goal of V1 is to provide a working foundation before optimizing the architecture further.
-
 ## Demo
-[Click on this link for the demo](https://youtu.be/rzg6q2zhR8g)
+
+[Watch the VISION demo](https://youtu.be/rzg6q2zhR8g)
 
 ## VISION Mini
 
-Checkout the **`vision-mini`** branch.
+Check out the **`vision-mini`** branch.
 
-VISION Mini aggressively reduces the size of the Markdown instructions and Skills
+VISION Mini aggressively reduces the size of the Markdown instructions and Skills to investigate how little context VISION actually needs while maintaining reliable agent behavior.
 
-The current `main` branch remains the full V1 implementation.
-
+The current `main` branch remains the full V1 implementation and serves as the baseline for comparison.
