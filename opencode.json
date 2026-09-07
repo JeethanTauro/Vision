@@ -5,6 +5,10 @@
       "notion": {
         "type": "remote",
         "url": "https://mcp.notion.com/mcp"
+      },
+      "vision-memory": {
+        "type": "local",
+        "command":["/home/jeethan/Desktop/vision/.venv/bin/python3", "/home/jeethan/Desktop/vision/memory/memory_mcp.py"]
       }
     }
   }
