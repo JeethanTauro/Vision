@@ -1,1 +1,4 @@
 config/notion.json
+.venv/
+data/
+__pycache__/
